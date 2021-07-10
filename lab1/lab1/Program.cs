@@ -24,30 +24,59 @@ namespace lab1
                 HasHeaderRecord = false,
                 Delimiter = ","
             };
+            List<Class> classes;
+            List<Enroll> enrolls;
+            List<Faculty> faculties;
+            List<Student> students;
+
             using (var reader = new StreamReader("W:\\source\\repos\\cs564\\testFiles\\Class.csv"))
             using (var csv = new CsvReader(reader, config))
             {
-                var classes = csv.GetRecords<Class>().ToList();
-                var enrolls = csv.GetRecords<Enroll>().ToList();
-                var faculties = csv.GetRecords<Faculty>().ToList();
-                var students = csv.GetRecords<Student>().ToList();
+                classes = csv.GetRecords<Class>().ToList();
+            }            
+            using (var reader = new StreamReader("W:\\source\\repos\\cs564\\testFiles\\Enroll.csv"))
+            using (var csv = new CsvReader(reader, config))
+            {
+                enrolls = csv.GetRecords<Enroll>().ToList();
+            }            
+            using (var reader = new StreamReader("W:\\source\\repos\\cs564\\testFiles\\Faculty.csv"))
+            using (var csv = new CsvReader(reader, config))
+            {
+                faculties = csv.GetRecords<Faculty>().ToList();
+            }            
+            using (var reader = new StreamReader("W:\\source\\repos\\cs564\\testFiles\\Student.csv"))
+            using (var csv = new CsvReader(reader, config))
+            {
+                students = csv.GetRecords<Student>().ToList();
+            }
 
-                var contextOptions = new DbContextOptionsBuilder<Lab1Context>()
-    .UseSqlite(connString)
-    .Options;
+            var contextOptions = new DbContextOptionsBuilder<Lab1Context>()
+.UseSqlite(connString)
+.Options;
 
-                using (var context = new Lab1Context(contextOptions))
+            using (var context = new Lab1Context(contextOptions))
+            {
+                context.Database.EnsureCreated();
+
+                using (var transaction = context.Database.BeginTransaction())
                 {
-                    context.Database.EnsureCreated();
-
-                    using (var transaction = context.Database.BeginTransaction())
-                    {
-                        context.BulkInsertOrUpdate(classes);
-                        context.BulkInsertOrUpdate(enrolls);
-                        context.BulkInsertOrUpdate(faculties);
-                        context.BulkInsertOrUpdate(students);
-                        transaction.Commit();
-                    }
+                    context.BulkInsertOrUpdate(classes);
+                    transaction.Commit();
+                }
+                using (var transaction = context.Database.BeginTransaction())
+                {
+                    context.BulkInsertOrUpdate(enrolls);
+                    transaction.Commit();
+                }
+                using (var transaction = context.Database.BeginTransaction())
+                {
+                    context.BulkInsertOrUpdate(faculties);
+                    transaction.Commit();
+                }
+                using (var transaction = context.Database.BeginTransaction())
+                {
+                    context.BulkInsertOrUpdate(students);
+                    transaction.Commit();
                 }
             }
         }
