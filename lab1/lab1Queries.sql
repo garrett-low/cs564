@@ -142,13 +142,15 @@ WHERE c1.meets_at IS NOT NULL
   AND e.cname=c2.cname;
 
 -- 14
-SELECT DISTINCT f.fname
-FROM Class c, Enroll e, Faculty f
-WHERE c.fid=f.fid AND c.cname IN (
-SELECT e.cname
-FROM Enroll e
-GROUP BY e.cname
-HAVING COUNT(e.cname)<5);
+SELECT fname
+FROM Faculty
+WHERE fid IN (
+	SELECT c.fid
+	FROM Enroll e, Class c
+	WHERE e.cname=c.cname
+	GROUP BY c.fid
+	HAVING COUNT(e.cname)<5
+);
 
 -- 15
 SELECT level, AVG(age)
@@ -164,7 +166,13 @@ GROUP BY level;
 -- 17
 SELECT f.fname, COUNT(c.fid)
 FROM Faculty f, Class c
-WHERE f.fid=c.fid AND c.room='R128'
+WHERE f.fid IN (
+  SELECT f.fid
+  FROM Faculty f, Class c
+  WHERE f.fid=c.fid 
+    AND c.room='R128'
+)
+AND f.fid=c.fid
 GROUP BY f.fname;
 
 -- 18
@@ -198,13 +206,13 @@ ON s.snum=e.snum;
 
 -- 20
 SELECT age, level
-FROM(
+FROM (
   SELECT level, age, MAX(ageCount)
-  FROM(
+  FROM (
     SELECT level, age, COUNT(age) as ageCount
     FROM Student
     GROUP BY level, age
-    )
+  )
  GROUP BY age
 )
 ORDER BY age DESC;
