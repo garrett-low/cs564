@@ -16,12 +16,18 @@ WHERE deptid=20;
 -- 4
 SELECT s.sname
 FROM Student s, Enroll e
-WHERE s.snum=e.snum AND e.cname='Database Systems';
+WHERE s.snum=e.snum 
+  AND s.level='JR'
+  AND e.cname='Database Systems';
 
 -- 5
 SELECT s.sname
 FROM Student s, Enroll e, Class c, Faculty f
-WHERE s.snum=e.snum AND e.cname=c.cname AND c.fid=f.fid AND f.fname='I. Teach';
+WHERE s.snum=e.snum 
+  AND e.cname=c.cname 
+  AND c.fid=f.fid
+  AND s.level='JR'
+  AND f.fname='I. Teach';
 
 -- 6
 SELECT cname
@@ -31,12 +37,15 @@ WHERE room='R128' OR meets_at LIKE 'MWF%';
 -- 7
 SELECT c.cname
 FROM Class c, Faculty f
-WHERE c.fid=f.fid AND f.fname='Elizabeth Taylor';
+WHERE c.fid=f.fid 
+  AND f.fname='Elizabeth Taylor';
 
 -- 8
 SELECT c.cname, c.room, c.meets_at
 FROM Class c, Student s, Enroll e
-WHERE s.sname='Joseph Thompson' AND s.snum=e.snum AND c.cname=e.cname;
+WHERE s.sname='Joseph Thompson'
+  AND s.snum=e.snum 
+  AND c.cname=e.cname;
 
 -- 9
 SELECT f.fname
@@ -47,13 +56,18 @@ WHERE f.fid=c.fid AND c.room='R128';
 SELECT c1.cname,c2.cname
 FROM Class c1, Class c2
 WHERE c1.meets_at IS NOT NULL
-  AND c1.meets_at=c2.meets_at AND c1.cname < c2.cname;
+  AND c1.meets_at=c2.meets_at 
+  AND c1.cname < c2.cname;
 
 -- 11
 SELECT MAX(age)
 FROM Student s, Enroll e, Class c, Faculty f
 WHERE s.major='History'
-  OR (s.snum=e.snum AND e.cname=c.cname AND c.fid=f.fid AND f.fname='I. Teach');
+  OR (
+    s.snum=e.snum 
+    AND e.cname=c.cname 
+    AND c.fid=f.fid 
+    AND f.fname='I. Teach');
 
 -- 12
 SELECT c.cname
@@ -177,29 +191,21 @@ JOIN Enroll e
 ON s.snum=e.snum;
 
 -- 20
-SELECT level, age
+SELECT age, level
 FROM(
-    SELECT level,
-      age,
-      MAX(ageCount)
-    FROM(
-        SELECT level,
-          age,
-          COUNT(age) as ageCount
-        FROM Student
-        GROUP BY level,
-          age
-      )
-    GROUP BY age
-  )
+  SELECT level, age, MAX(ageCount)
+  FROM(
+    SELECT level, age, COUNT(age) as ageCount
+    FROM Student
+    GROUP BY level, age
+    )
+ GROUP BY age
+)
 ORDER BY age DESC;
 
 --21
 SELECT AVG(s.age)
-FROM Student s,
-  Enroll e,
-  Class c,
-  Faculty f
+FROM Student s, Enroll e, Class c, Faculty f
 WHERE s.snum = e.snum
   AND e.cname = c.cname
   AND c.fid = f.fid
