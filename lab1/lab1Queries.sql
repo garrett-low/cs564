@@ -127,13 +127,19 @@ WHERE c1.meets_at IS NOT NULL AND c1.meets_at=c2.meets_at AND c1.cname<c2.cname)
 --13
 SELECT s.sname
 FROM Student s, Enroll e, Class c1, Class c2
-WHERE c1.meets_at IS NOT NULL AND c1.meets_at=c2.meets_at AND c1.cname<c2.cname
-  AND s.snum=e.snum AND e.cname=c1.cname
+WHERE c1.meets_at IS NOT NULL 
+  AND c1.meets_at=c2.meets_at 
+  AND c1.cname<c2.cname
+  AND s.snum=e.snum 
+  AND e.cname=c1.cname
 INTERSECT
 SELECT s.sname
 FROM Student s, Enroll e, Class c1, Class c2
-WHERE c1.meets_at IS NOT NULL AND c1.meets_at=c2.meets_at AND c1.cname<c2.cname
-  AND s.snum=e.snum AND e.cname=c2.cname;
+WHERE c1.meets_at IS NOT NULL
+  AND c1.meets_at=c2.meets_at 
+  AND c1.cname<c2.cname
+  AND s.snum=e.snum
+  AND e.cname=c2.cname;
 
 -- 14
 SELECT DISTINCT f.fname
